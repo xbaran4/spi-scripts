@@ -1,0 +1,16 @@
+#!/bin/sh
+
+set -e
+
+# shellcheck source=env.sh
+. "$( dirname "${0}" )/env.sh"
+
+pushd ${SPIOPERATORDIR}
+
+TAG=$( getBranch )
+
+IMAGE="${SPIOPERATORIMAGE}:${TAG}"
+
+make docker-build docker-push SPIO_IMG=${IMAGE}
+
+popd

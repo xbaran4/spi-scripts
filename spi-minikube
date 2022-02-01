@@ -1,0 +1,24 @@
+#!/bin/sh
+
+set -e
+
+# shellcheck source=env.sh
+. "$( dirname "${0}" )/env.sh"
+
+if [ -z "${1}" ]; then
+  MEMORY=6
+else
+  MEMORY=${1}
+fi
+
+if [ $( uname ) == "Darwin" ]; then
+  MINIKUBE_DRIVER="hyperkit"
+else
+  MINIKUBE_DRIVER="kvm2"
+fi
+
+set -x
+
+minikube start --memory "${MEMORY}"gb --disk-size 40g --driver="${MINIKUBE_DRIVER}" --cpus='2'
+
+minikube ip

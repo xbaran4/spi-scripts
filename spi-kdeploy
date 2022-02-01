@@ -1,0 +1,15 @@
+#!/bin/sh
+
+set -x
+
+SCRIPT_DIR=$( dirname "${0}" )
+
+# shellcheck source=env.sh
+. "${SCRIPT_DIR}/env.sh"
+
+pushd ${SPIOPERATORDIR}
+
+IMAGE="${SPIOPERATORIMAGE}:$( getBranch )"
+
+make deploy_minikube SPIO_IMG=${IMAGE}
+popd
