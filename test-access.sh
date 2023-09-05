@@ -44,7 +44,6 @@ echo
 echo "Creating SPIAccessTokens for each provider to test private repo..."
 for i in "github.com ${GITHUB_PAT} gibberish repository" "gitlab.com ${GITLAB_PAT} gibberish repository" "quay.io ${QUAY_ROBOT_TOKEN} ${QUAY_ROBOT_NAME} registry"; do
   set -- $i
-  j=$((j+1))
 cat <<EOF | kubectl apply -f -
 apiVersion: appstudio.redhat.com/v1beta1
 kind: SPIAccessToken
@@ -59,9 +58,9 @@ spec:
   serviceProviderUrl: https://${1}
 EOF
 curl --insecure -X POST -H "Content-Type: application/json" -H "Authorization: Bearer ${AUTH_TOKEN}" \
-    -d "{\"username\": \"${3}\", \"access_token\": \"${2}\"}" "${BASE_URL}/token/default/test-access-token-${j}"
+    -d "{\"username\": \"${3}\", \"access_token\": \"${2}\"}" "${BASE_URL}/token/default/test-access-token-${1}"
 done
-sleep 5
+sleep 10
 echo "Done."
 echo
 
@@ -105,6 +104,7 @@ metadata:
     appstudio.redhat.com/sp.host: ${1}
 spec:
   secret:
+    type: kubernetes.io/basic-auth
     name: secret-from-remote-${1}
   targets:
   - namespace: default
@@ -118,13 +118,13 @@ metadata:
     appstudio.redhat.com/upload-secret: remotesecret
   annotations:
     appstudio.redhat.com/remotesecret-name: test-remote-secret-${1}
-type: Opaque
+type: kubernetes.io/basic-auth
 stringData:
   username: ${3}
   password: ${2}
 EOF
 done
-sleep 5
+sleep 10
 echo "Done."
 echo
 
